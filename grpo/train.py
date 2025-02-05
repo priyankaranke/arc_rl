@@ -1,4 +1,7 @@
 """Module for training on ARC data with leave-one-out data generation and training loop."""
+random_seed = 42
+torch.manual_seed(random_seed)
+random.seed(random_seed)
 
 import os
 import random
@@ -18,13 +21,6 @@ augmentation_params = {
     "max_spatial_transforms": 6,
 }
 
-
-def setup_random_seed(random_seed):
-    """Set up random seed."""
-    torch.manual_seed(random_seed)
-    random.seed(random_seed)
-
-
 def cleanup_leave_one_out_data(dir_to_remove):
     """Clean up leave-one-out data directory."""
     if os.path.exists(dir_to_remove):
@@ -36,8 +32,6 @@ def cleanup_leave_one_out_data(dir_to_remove):
 
 def main():
     """Main training loop."""
-    setup_random_seed(42)
-
     # Load data
     challenges_file_path = "./data/arc-prize-2024/arc-agi_evaluation_challenges.json"
     solutions_file_path = "./data/arc-prize-2024/arc-agi_evaluation_solutions.json"
