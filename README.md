@@ -1,2 +1,7 @@
-# arc_rl
-An RL approach to solving ARC prize 2024
+# An RL approach to solving ARC prize 2024
+
+## How to run it locally
+
+## Understanding the codebase
+
+## Results
