@@ -6,6 +6,7 @@ from typing import List
 from torch.utils.data import Dataset, DataLoader, Sampler
 import random
 
+
 class ARCDataset(Dataset):
     """
     Loads puzzles from several sources and packages them into a single dataset.
@@ -111,7 +112,9 @@ class ARCDataset(Dataset):
                         fake_guess = correct_output.clone()
                         faked_cells = 0
                         while faked_cells < 6:
-                            r, c = random.randint(0, fake_guess.shape[0] - 1), random.randint(0, fake_guess.shape[1] - 1)
+                            r, c = random.randint(
+                                0, fake_guess.shape[0] - 1
+                            ), random.randint(0, fake_guess.shape[1] - 1)
                             if fake_guess[r, c] != 0:
                                 fake_guess[r, c] = 0
                                 faked_cells += 1
@@ -193,9 +196,11 @@ class BucketedBatchSampler(Sampler[List[int]]):
                 yield batch_indices
                 start = end
 
+
 def collate_fn(batch: List[dict]):
     # Return the batch as a list of dictionaries (one dictionary per example)
     return batch
+
 
 def get_arc_loader(
     split,

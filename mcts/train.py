@@ -16,6 +16,7 @@ from arc_naive_policy import compute_naive_policy_and_done
 import torch.optim.lr_scheduler as lr_scheduler
 import csv
 
+
 def do_training_epoch(
     net,
     optimizer,
@@ -144,23 +145,31 @@ def do_training_epoch(
 
     # At the end of training or at desired intervals, save the model
     if (epoch_index + 1) % save_interval == 0 or epoch_index == total_epochs - 1:
-        save_model(net, optimizer, global_step, epoch_index, save_dir=f"models/{puzzle_id}")
+        save_model(
+            net, optimizer, global_step, epoch_index, save_dir=f"models/{puzzle_id}"
+        )
 
     return global_step
+
 
 def save_model(model, optimizer, global_step, epoch_index, save_dir="models"):
     """
     Saves the model and optimizer state dictionaries.
     """
     os.makedirs(save_dir, exist_ok=True)
-    model_path = os.path.join(save_dir, f"model_epoch_{epoch_index}_step_{global_step}.pth")
-    optimizer_path = os.path.join(save_dir, f"optimizer_epoch_{epoch_index}_step_{global_step}.pth")
+    model_path = os.path.join(
+        save_dir, f"model_epoch_{epoch_index}_step_{global_step}.pth"
+    )
+    optimizer_path = os.path.join(
+        save_dir, f"optimizer_epoch_{epoch_index}_step_{global_step}.pth"
+    )
 
     torch.save(model.state_dict(), model_path)
     torch.save(optimizer.state_dict(), optimizer_path)
 
     print(f"Model saved to {model_path}")
     print(f"Optimizer saved to {optimizer_path}")
+
 
 @torch.no_grad()
 def do_validation_naive(
@@ -224,19 +233,27 @@ def do_validation_naive(
             continue
 
         # Stack naive targets
-        row_targets = torch.stack(row_targets_list, dim=0)      # [B, max_rows]
-        col_targets = torch.stack(col_targets_list, dim=0)      # [B, max_cols]
+        row_targets = torch.stack(row_targets_list, dim=0)  # [B, max_rows]
+        col_targets = torch.stack(col_targets_list, dim=0)  # [B, max_cols]
         color_targets = torch.stack(color_targets_list, dim=0)  # [B, num_colors]
-        done_targets = torch.stack(done_targets_list, dim=0)    # [B, 2]
+        done_targets = torch.stack(done_targets_list, dim=0)  # [B, 2]
 
         # Forward pass
         with autocast(device_type="cuda", enabled=True):
-            outputs = net.forward(puzzle_batch)  # row_logits, col_logits, color_logits, done_logits
+            outputs = net.forward(
+                puzzle_batch
+            )  # row_logits, col_logits, color_logits, done_logits
 
-            row_log_probs = F.log_softmax(outputs["row_logits"], dim=-1)      # [B, max_rows]
-            col_log_probs = F.log_softmax(outputs["col_logits"], dim=-1)      # [B, max_cols]
-            color_log_probs = F.log_softmax(outputs["color_logits"], dim=-1)  # [B, num_colors]
-            done_log_probs = F.log_softmax(outputs["done_logits"], dim=-1)    # [B, 2]
+            row_log_probs = F.log_softmax(
+                outputs["row_logits"], dim=-1
+            )  # [B, max_rows]
+            col_log_probs = F.log_softmax(
+                outputs["col_logits"], dim=-1
+            )  # [B, max_cols]
+            color_log_probs = F.log_softmax(
+                outputs["color_logits"], dim=-1
+            )  # [B, num_colors]
+            done_log_probs = F.log_softmax(outputs["done_logits"], dim=-1)  # [B, 2]
 
             # Cross-entropy = - sum(target * log_probs)
             loss_row = -(row_targets * row_log_probs).sum(dim=-1).mean()
@@ -254,35 +271,39 @@ def do_validation_naive(
         # i.e. i = B-1
         i = B - 1
         last_puzzle_id = puzzle_ids[i]
-        
+
         # Create puzzle-specific directory
         puzzle_dir = os.path.join(trace_dir, last_puzzle_id)
         os.makedirs(puzzle_dir, exist_ok=True)
-        
+
         # Write CSV in puzzle directory
-        csv_path = os.path.join(puzzle_dir, f"epoch_{epoch_index}_batch_{batch_idx}.csv")
+        csv_path = os.path.join(
+            puzzle_dir, f"epoch_{epoch_index}_batch_{batch_idx}.csv"
+        )
         with open(csv_path, "w", newline="") as f_out:
             writer_csv = csv.writer(f_out)
 
             # Single header row
-            writer_csv.writerow([
-                "puzzle_id",
-                "demo_input",
-                "current_guess",
-                "correct_output",
-                "row_logits",
-                "row_targets",
-                "col_logits",
-                "col_targets",
-                "color_logits",
-                "color_targets",
-                "done_softmax",
-                "done_targets",
-                "loss_row",
-                "loss_col",
-                "loss_color",
-                "loss_done",
-            ])
+            writer_csv.writerow(
+                [
+                    "puzzle_id",
+                    "demo_input",
+                    "current_guess",
+                    "correct_output",
+                    "row_logits",
+                    "row_targets",
+                    "col_logits",
+                    "col_targets",
+                    "color_logits",
+                    "color_targets",
+                    "done_softmax",
+                    "done_targets",
+                    "loss_row",
+                    "loss_col",
+                    "loss_color",
+                    "loss_done",
+                ]
+            )
 
             # puzzle_data for the last puzzle
             p_data = puzzle_batch[i]
@@ -303,24 +324,26 @@ def do_validation_naive(
             color_targets_full = color_targets[i].cpu().numpy().tolist()
             done_targets_full = done_targets[i].cpu().numpy().tolist()
 
-            writer_csv.writerow([
-                last_puzzle_id,
-                demo_input_list,
-                current_guess_list,
-                correct_output_list,
-                row_logits_full,
-                row_targets_full,
-                col_logits_full,
-                col_targets_full,
-                color_logits_full,
-                color_targets_full,
-                done_softmax_list,
-                done_targets_full,
-                float(loss_row.item()),
-                float(loss_col.item()),
-                float(loss_color.item()),
-                float(loss_done.item()),
-            ])
+            writer_csv.writerow(
+                [
+                    last_puzzle_id,
+                    demo_input_list,
+                    current_guess_list,
+                    correct_output_list,
+                    row_logits_full,
+                    row_targets_full,
+                    col_logits_full,
+                    col_targets_full,
+                    color_logits_full,
+                    color_targets_full,
+                    done_softmax_list,
+                    done_targets_full,
+                    float(loss_row.item()),
+                    float(loss_col.item()),
+                    float(loss_color.item()),
+                    float(loss_done.item()),
+                ]
+            )
 
     # Final average
     if total_samples > 0:
@@ -330,12 +353,20 @@ def do_validation_naive(
 
     # Log cross-entropy to TensorBoard
     writer.add_scalar("val/loss_xent", avg_loss, global_step)
-    writer.add_scalar("val/total_already_correct_pct", total_already_correct / total_samples, global_step)
-    print(f"[Validation Xent] total_samples={total_samples}, loss_xent={avg_loss:.4f}, total_already_correct_pct={total_already_correct / total_samples:.4f}")
+    writer.add_scalar(
+        "val/total_already_correct_pct",
+        total_already_correct / total_samples,
+        global_step,
+    )
+    print(
+        f"[Validation Xent] total_samples={total_samples}, loss_xent={avg_loss:.4f}, total_already_correct_pct={total_already_correct / total_samples:.4f}"
+    )
+
 
 def set_seed(seed=42):
     random.seed(seed)
     torch.manual_seed(seed)
+
 
 def main():
     set_seed(47)
@@ -378,17 +409,17 @@ def main():
     # 3) Create an optimizer
     epochs = 20
     optimizer = optim.AdamW(net.parameters(), lr=1e-4)
-    scheduler = lr_scheduler.CosineAnnealingLR(
-        optimizer,
-        T_max=epochs,
-        eta_min=1e-5
-    )
+    scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-5)
     scaler = GradScaler()
 
-    challenges_file_path=os.path.join(base_path, "arc-prize-2024/arc-agi_evaluation_challenges.json")
-    solutions_file_path=os.path.join(base_path, "arc-prize-2024/arc-agi_evaluation_solutions.json")
-    submission_file_path=os.path.join(base_path, "submission.json")
-    analysis_json_dir_path=os.path.join(base_path, "aug_demo_analysis/")
+    challenges_file_path = os.path.join(
+        base_path, "arc-prize-2024/arc-agi_evaluation_challenges.json"
+    )
+    solutions_file_path = os.path.join(
+        base_path, "arc-prize-2024/arc-agi_evaluation_solutions.json"
+    )
+    submission_file_path = os.path.join(base_path, "submission.json")
+    analysis_json_dir_path = os.path.join(base_path, "aug_demo_analysis/")
 
     # 4) Create DataLoaders
     train_loader = get_arc_loader(

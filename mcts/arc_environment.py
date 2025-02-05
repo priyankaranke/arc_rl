@@ -1,9 +1,11 @@
 import numpy as np
 
+
 class PuzzleState:
     """
     Represents a single puzzle state, i.e. (puzzle_id, demo_input, current_guess, correct_output).
     """
+
     def __init__(
         self, puzzle_id, demo_input, current_guess, num_colors, correct_output=None
     ):

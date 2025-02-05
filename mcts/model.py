@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch._dynamo
 
+
 def pad_to_bounding_box(
     grid_a: torch.Tensor,
     grid_b: torch.Tensor,
@@ -19,12 +20,14 @@ def pad_to_bounding_box(
     padded_b[0:bH, 0:bW] = grid_b
     return padded_a, padded_b
 
+
 def next_power_of_2(n: int) -> int:
     """
     Returns the smallest power-of-two integer >= n.
     e.g. if n=45, returns 64.
     """
     return 1 << (n - 1).bit_length()
+
 
 @torch.compile
 class ParamPolicyValueTransformer(nn.Module):

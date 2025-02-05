@@ -1,12 +1,14 @@
 from arc_environment import PuzzleState
 import torch
 
+
 def puzzle_reward(
     mismatch_count_int: int, total_cells: int, success_bonus: float = 5.0
 ):
     frac_correct = 1.0 - (float(mismatch_count_int) / float(total_cells))
     bin_bonus = success_bonus if mismatch_count_int == 0 else 0.0
     return bin_bonus + frac_correct
+
 
 def compute_naive_policy_and_done(
     puzzle_state: PuzzleState,

@@ -2,6 +2,7 @@ import math
 import torch
 import numpy as np
 
+
 class MCTSNode:
     def __init__(self, state):
         self.state = state
@@ -12,6 +13,7 @@ class MCTSNode:
         self.net_value_est = 0.0  # Approx value from net
         self.net_done_prob = 0.0  # Probability that the puzzle is done
         self.debug_eventual_solution_found = False
+
 
 def ucb_score(parent, child, c_puct):
     if child.visit_count == 0:
@@ -25,6 +27,7 @@ def ucb_score(parent, child, c_puct):
     )
     return q_value + u_value
 
+
 def select_child(node, c_puct):
     best_action = None
     best_child = None
@@ -37,6 +40,7 @@ def select_child(node, c_puct):
             best_action = action
             best_child = child
     return best_action, best_child
+
 
 def expand_node(
     node,
@@ -98,11 +102,7 @@ def expand_node(
         color = np.random.randint(0, num_colors - 1)
 
         sum_logits = (
-            row_log[r]
-            + col_log[c]
-            + width_log[w]
-            + height_log[h]
-            + color_log[color]
+            row_log[r] + col_log[c] + width_log[w] + height_log[h] + color_log[color]
         )
         action_tuple = (r, c, w, h, color)
         sum_log_val = sum_logits.item()
@@ -127,6 +127,7 @@ def expand_node(
         local_prob = exps[i] / (total_exp + 1e-8)
         child_node.prior_prob = local_prob
         node.children[action_tuple] = child_node
+
 
 def evaluate_and_expand_node(node, net, expansions_per_node, num_candidates):
     with torch.no_grad():
@@ -153,6 +154,7 @@ def evaluate_and_expand_node(node, net, expansions_per_node, num_candidates):
         num_candidates=num_candidates,
     )
     return out["value"]
+
 
 def run_mcts(
     root_state,
