@@ -5,6 +5,8 @@ evaluation tasks from the ARC-AGI public evaluation dataset.
 Please look at the [report](report.pdf) for a detailed explanation of the approach and results, as well as the [results sheet](https://docs.google.com/spreadsheets/d/1HA3Hcw2kc_Hie4cdTndIp9tajs0wxeRuElRkvt5oT08/edit?gid=1108968747#gid=1108968747) for the raw table of results.
 
 ### How to run it locally
+The run was conducted on a single H100 GPU with 80GB VRAM on CUDA version 12.4. Please note that you may need to adjust the training parameters to fit your hardware. Also of note, I couldn't get it to run on a GH200 since Unsloth seemed to have issues with the ARM64 CPU.
+
 1. Setup environment
 ```bash
 
