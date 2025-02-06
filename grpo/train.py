@@ -1,15 +1,16 @@
 """Module for training on ARC data with leave-one-out data generation and training loop."""
+import random
+import torch
+import os
+import shutil
+from tqdm import tqdm
+
 random_seed = 42
 torch.manual_seed(random_seed)
 random.seed(random_seed)
 
-import os
-import random
-import shutil
 from prepare_leave_one_out import generate_leave_one_out_data
 from arc_data_loader import get_arc_loader
-import torch
-from tqdm import tqdm
 from run_grpo import run_training
 
 data_loader_params = {

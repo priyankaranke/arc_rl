@@ -1,0 +1,5 @@
+huggingface-hub==0.28.1
+torch==2.4.1
+peft==0.14.0
+unsloth==2025.1.6
+tensorboard
