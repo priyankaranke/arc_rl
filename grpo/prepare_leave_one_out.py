@@ -43,7 +43,6 @@ def apply_color_permutation(inp: np.ndarray, perm_string: str) -> np.ndarray:
     return perm_map[inp]
 
 
-# pylint: disable=R0913,R0917,R0914
 def create_augmentations(
     withheld_input: np.ndarray,
     withheld_output: np.ndarray,
@@ -119,7 +118,6 @@ def create_augmentations(
             "other_demos": aug_other_demos,
         }
     return results
-# pylint: enable=R0913,R0917,R0914
 
 
 def generate_leave_one_out_data(

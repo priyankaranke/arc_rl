@@ -13,7 +13,6 @@ from torch.utils.data import Dataset, DataLoader, Sampler
 class ARCDataset(Dataset):
     """Dataset for ARC challenges and solutions with leave-one-out augmentations."""
 
-    # pylint: disable=R0914
     def __init__(
         self,
         split,
@@ -102,7 +101,6 @@ class ARCDataset(Dataset):
             self.examples,
             key=lambda e: self.calculate_example_size(e),
         )
-    # pylint: enable=R0914
 
     def calculate_example_size(self, example: dict) -> int:
         """Calculate a size metric for an example based on grid sizes."""
@@ -127,7 +125,6 @@ class BucketedBatchSampler(Sampler[List[int]]):
       3) We shuffle each bucket, then yield mini-batches from that bucket.
     """
 
-    # pylint: disable=R0913,R0917
     def __init__(
         self,
         dataset: ARCDataset,
@@ -153,7 +150,6 @@ class BucketedBatchSampler(Sampler[List[int]]):
                 current = []
         if current and not drop_last:
             self.buckets.append(current)
-    # pylint: enable=R0913,R0917
 
     def __len__(self):
         total = 0
